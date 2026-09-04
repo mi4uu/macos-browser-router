@@ -3,7 +3,21 @@
 **A menubar app that decides which browser — and which browser profile — every link on
 your Mac opens in.** Free, open source, no popup asking you every single time.
 
-![The menu](docs/menu.png)
+<p align="center">
+  <img src="docs/menu.png" alt="The menubar menu: browsers, Chrome profiles, History, Edit list, Rules" width="420">
+</p>
+
+## Quick start
+
+One line. No clone, no Xcode — downloads the latest release, installs it into
+`~/Applications`, registers it as a browser and launches it:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mi4uu/macos-browser-router/main/install.sh | bash
+```
+
+Then, in the menubar menu: **Set Browser Router as default browser…**, confirm the macOS
+dialog, and pick the browser your links should open in. That is the whole setup.
 
 ## The problem
 
@@ -57,6 +71,10 @@ it. Also on disk as JSON Lines, so it is greppable.
 20:11   Mail → tickets.example.com → Safari
 ```
 
+<p align="center">
+  <img src="docs/history.png" alt="History submenu showing app, page and target browser per link" width="720">
+</p>
+
 **Editable list.** Terminals and IDEs register themselves as URL handlers, so macOS lists
 them as "browsers". Untick them in **Edit list** and they are gone.
 
@@ -64,28 +82,39 @@ them as "browsers". Untick them in **Edit list** and they are gone.
 
 ## Install
 
-Requires macOS 14 or newer. Apple Silicon and Intel both work; the build script targets
-your own machine's architecture.
+macOS 14 or newer. Releases are universal binaries, so Apple Silicon and Intel both work.
+
+**Option A — the install script** *(see [Quick start](#quick-start))*
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/mi4uu/macos-browser-router/main/install.sh | bash
+```
+
+**Option B — download the app**
+
+Grab the `.zip` from [Releases](https://github.com/mi4uu/macos-browser-router/releases),
+unzip it into `~/Applications`, then clear the quarantine flag so macOS will open it:
+
+```sh
+xattr -dr com.apple.quarantine ~/Applications/"Browser Router.app"
+```
+
+**Option C — build from source** *(needs Xcode Command Line Tools)*
 
 ```sh
 git clone https://github.com/mi4uu/macos-browser-router.git
 cd macos-browser-router
-./build.sh
+./build.sh          # compiles, signs, installs to ~/Applications, registers it
 open -a ~/Applications/"Browser Router.app"
 ```
 
-`build.sh` compiles with the Swift toolchain that ships with Xcode Command Line Tools,
-signs the app ad-hoc, installs it to `~/Applications` and registers it with LaunchServices.
+### Why the quarantine step
 
-Then, in the menubar menu:
-
-1. **Set Browser Router as default browser…** and confirm the macOS dialog
-2. Pick the browser links should go to
-3. Optionally **Open at login**
-
-A Homebrew tap is planned. Note that this app is signed ad-hoc, not notarized by Apple —
-notarization costs $99/year and this is a free project — so a downloaded build shows a
-Gatekeeper warning on first launch. Building from source, as above, avoids it entirely.
+Releases are built by GitHub Actions and signed ad-hoc, not notarized by Apple —
+notarization needs a $99/year developer account and this project is free. macOS therefore
+quarantines the downloaded app, and options A and B clear that flag. Building from source
+(option C) never sets it in the first place. If you would rather not take my word for what
+the binary contains, option C builds the same universal app from the same script CI runs.
 
 ## Files
 
@@ -96,6 +125,12 @@ Gatekeeper warning on first launch. Building from source, as above, avoids it en
 | `config.json` | current target, hidden entries, menu language |
 | `rules.txt` | routing rules, re-read on every link |
 | `history.jsonl` | one JSON object per opened link |
+
+## Building
+
+`./build.sh` builds for your machine and installs it. `./release.sh 1.2.3` builds the
+universal, versioned bundle and zips it into `dist/` — the same script GitHub Actions runs
+for every push and every `v*` tag.
 
 ## How it works
 

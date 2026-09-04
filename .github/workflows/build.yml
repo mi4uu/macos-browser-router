@@ -1,0 +1,22 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build universal app
+        run: ./release.sh 0.0.0-ci
+      - name: Check the bundle
+        run: |
+          lipo -info "dist/Browser Router.app/Contents/MacOS/BrowserRouter"
+          codesign --verify --strict "dist/Browser Router.app"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BrowserRouter-ci
+          path: dist/*.zip
