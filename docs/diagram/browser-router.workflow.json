@@ -1,0 +1,219 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Where a link goes",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "external": {
+          "label": "Your apps"
+        },
+        "backend": {
+          "label": "System"
+        },
+        "messagebus": {
+          "label": "Rules"
+        },
+        "frontend": {
+          "label": "Browsers"
+        },
+        "database": {
+          "label": "History"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "source",
+      "label": "Where the link comes from"
+    },
+    {
+      "id": "router",
+      "label": "Browser Router"
+    },
+    {
+      "id": "targets",
+      "label": "Where it opens"
+    },
+    {
+      "id": "log",
+      "label": "What was opened"
+    }
+  ],
+  "phases": [
+    {
+      "id": "arrive",
+      "label": "A link is clicked",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "decide",
+      "label": "Decide where it opens",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "open",
+      "label": "Open and log",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "click",
+    "macos",
+    "router",
+    "rules",
+    "chromework",
+    "history"
+  ],
+  "nodes": [
+    {
+      "id": "click",
+      "lane": "source",
+      "col": 0,
+      "type": "external",
+      "label": "Link clicked",
+      "sublabel": "Slack, Mail, terminal",
+      "width": 150
+    },
+    {
+      "id": "macos",
+      "lane": "source",
+      "col": 1,
+      "type": "backend",
+      "label": "macOS",
+      "sublabel": "sends the URL on",
+      "width": 150
+    },
+    {
+      "id": "router",
+      "lane": "router",
+      "col": 2,
+      "type": "backend",
+      "label": "Browser Router",
+      "sublabel": "menubar agent",
+      "tag": "is the default browser",
+      "width": 150
+    },
+    {
+      "id": "rules",
+      "lane": "router",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Rules",
+      "sublabel": "URL or source app",
+      "tag": "optional",
+      "width": 150
+    },
+    {
+      "id": "fallback",
+      "lane": "router",
+      "col": 4,
+      "type": "backend",
+      "label": "Menubar default",
+      "sublabel": "one click to change",
+      "width": 150
+    },
+    {
+      "id": "chromework",
+      "lane": "targets",
+      "col": 4,
+      "type": "frontend",
+      "label": "Chrome — Work",
+      "sublabel": "its own profile",
+      "width": 150
+    },
+    {
+      "id": "safari",
+      "lane": "targets",
+      "col": 5,
+      "type": "frontend",
+      "label": "Chrome — Private",
+      "width": 150,
+      "sublabel": "its own profile"
+    },
+    {
+      "id": "history",
+      "lane": "log",
+      "col": 5,
+      "type": "database",
+      "label": "History",
+      "sublabel": "app → page → browser",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "click-macos",
+      "from": "click",
+      "to": "macos"
+    },
+    {
+      "id": "macos-router",
+      "from": "macos",
+      "to": "router",
+      "label": "http / https",
+      "variant": "emphasis"
+    },
+    {
+      "id": "router-rules",
+      "from": "router",
+      "to": "rules",
+      "label": "first match wins"
+    },
+    {
+      "id": "rules-work",
+      "from": "rules",
+      "to": "chromework",
+      "label": "github.com → Work",
+      "variant": "emphasis"
+    },
+    {
+      "id": "rules-fallback",
+      "from": "rules",
+      "to": "fallback",
+      "label": "no rule matched"
+    },
+    {
+      "id": "fallback-private",
+      "from": "fallback",
+      "to": "safari",
+      "label": "the ticked browser",
+      "variant": "emphasis"
+    },
+    {
+      "id": "work-history",
+      "from": "chromework",
+      "to": "history",
+      "label": "logged",
+      "variant": "dashed",
+      "role": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "The simple part",
+      "items": [
+        "The menubar icon is the browser your links open in",
+        "Click another one and every link follows, from then on"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "The optional part",
+      "items": [
+        "Rules match a URL pattern or the app the link came from",
+        "Anything unmatched falls through to the browser you ticked"
+      ]
+    }
+  ]
+}
