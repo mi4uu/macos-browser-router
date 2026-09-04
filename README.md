@@ -115,7 +115,7 @@ effect immediately.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/flow-dark.png">
-  <img src="docs/flow-light.png" alt="A link is clicked, macOS hands it to Browser Router, rules decide the target, otherwise the menubar default, and the result is logged to history" width="820">
+  <img src="docs/flow-light.png" alt="Two examples: a WhatsApp link with no rules opens in the browser ticked in the menubar, and a Mail link with one rule opens in Chrome — Work" width="820">
 </picture>
 
 <sub>Explorable version: <a href="docs/diagram/browser-router.html"><code>docs/diagram/browser-router.html</code></a></sub>

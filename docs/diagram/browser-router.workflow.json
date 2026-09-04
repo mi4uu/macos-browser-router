@@ -9,210 +9,135 @@
       "mode": "auto",
       "entries": {
         "external": {
-          "label": "Your apps"
+          "label": "You click a link"
         },
         "backend": {
-          "label": "System"
-        },
-        "messagebus": {
-          "label": "Rules"
+          "label": "Browser Router"
         },
         "frontend": {
           "label": "Browsers"
-        },
-        "database": {
-          "label": "History"
         }
       }
-    }
+    },
+    "viewBox": [
+      1180,
+      404
+    ]
   },
   "lanes": [
     {
-      "id": "source",
-      "label": "Where the link comes from"
+      "id": "unmatched",
+      "label": "With no rules at all"
     },
     {
-      "id": "router",
-      "label": "Browser Router"
-    },
-    {
-      "id": "targets",
-      "label": "Where it opens"
-    },
-    {
-      "id": "log",
-      "label": "What was opened"
-    }
-  ],
-  "phases": [
-    {
-      "id": "arrive",
-      "label": "A link is clicked",
-      "fromCol": 0,
-      "toCol": 1
-    },
-    {
-      "id": "decide",
-      "label": "Decide where it opens",
-      "fromCol": 2,
-      "toCol": 3,
-      "variant": "emphasis"
-    },
-    {
-      "id": "open",
-      "label": "Open and log",
-      "fromCol": 4,
-      "toCol": 5,
-      "variant": "dashed"
+      "id": "matched",
+      "label": "With one rule"
     }
   ],
   "mainPath": [
-    "click",
-    "macos",
-    "router",
-    "rules",
-    "chromework",
-    "history"
+    "whatsapp",
+    "router_b",
+    "firefox"
   ],
   "nodes": [
     {
-      "id": "click",
-      "lane": "source",
+      "id": "whatsapp",
+      "lane": "unmatched",
       "col": 0,
       "type": "external",
-      "label": "Link clicked",
-      "sublabel": "Slack, Mail, terminal",
+      "label": "WhatsApp",
+      "sublabel": "you click a link",
       "width": 150
     },
     {
-      "id": "macos",
-      "lane": "source",
+      "id": "router_b",
+      "lane": "unmatched",
       "col": 1,
       "type": "backend",
-      "label": "macOS",
-      "sublabel": "sends the URL on",
+      "label": "Browser Router",
+      "sublabel": "your default browser",
+      "width": 160
+    },
+    {
+      "id": "firefox",
+      "lane": "unmatched",
+      "col": 2,
+      "type": "frontend",
+      "label": "Firefox",
+      "sublabel": "ticked in the menubar",
       "width": 150
     },
     {
-      "id": "router",
-      "lane": "router",
-      "col": 2,
+      "id": "mail",
+      "lane": "matched",
+      "col": 0,
+      "type": "external",
+      "label": "Mail",
+      "sublabel": "you click a link",
+      "width": 150
+    },
+    {
+      "id": "router_a",
+      "lane": "matched",
+      "col": 1,
       "type": "backend",
       "label": "Browser Router",
-      "sublabel": "menubar agent",
-      "tag": "is the default browser",
-      "width": 150
-    },
-    {
-      "id": "rules",
-      "lane": "router",
-      "col": 3,
-      "type": "messagebus",
-      "label": "Rules",
-      "sublabel": "URL or source app",
-      "tag": "optional",
-      "width": 150
-    },
-    {
-      "id": "fallback",
-      "lane": "router",
-      "col": 4,
-      "type": "backend",
-      "label": "Menubar default",
-      "sublabel": "one click to change",
-      "width": 150
+      "sublabel": "your default browser",
+      "width": 160
     },
     {
       "id": "chromework",
-      "lane": "targets",
-      "col": 4,
+      "lane": "matched",
+      "col": 2,
       "type": "frontend",
       "label": "Chrome — Work",
-      "sublabel": "its own profile",
-      "width": 150
-    },
-    {
-      "id": "safari",
-      "lane": "targets",
-      "col": 5,
-      "type": "frontend",
-      "label": "Chrome — Private",
-      "width": 150,
-      "sublabel": "its own profile"
-    },
-    {
-      "id": "history",
-      "lane": "log",
-      "col": 5,
-      "type": "database",
-      "label": "History",
-      "sublabel": "app → page → browser",
+      "sublabel": "opens here",
       "width": 150
     }
   ],
   "edges": [
     {
-      "id": "click-macos",
-      "from": "click",
-      "to": "macos"
+      "id": "mail-router",
+      "from": "mail",
+      "to": "router_a",
+      "variant": "default"
     },
     {
-      "id": "macos-router",
-      "from": "macos",
-      "to": "router",
-      "label": "http / https",
-      "variant": "emphasis"
-    },
-    {
-      "id": "router-rules",
-      "from": "router",
-      "to": "rules",
-      "label": "first match wins"
-    },
-    {
-      "id": "rules-work",
-      "from": "rules",
+      "id": "router-work",
+      "from": "router_a",
       "to": "chromework",
-      "label": "github.com → Work",
+      "label": "rule: Mail → chrome work",
+      "variant": "default"
+    },
+    {
+      "id": "whatsapp-router",
+      "from": "whatsapp",
+      "to": "router_b",
       "variant": "emphasis"
     },
     {
-      "id": "rules-fallback",
-      "from": "rules",
-      "to": "fallback",
-      "label": "no rule matched"
-    },
-    {
-      "id": "fallback-private",
-      "from": "fallback",
-      "to": "safari",
-      "label": "the ticked browser",
+      "id": "router-firefox",
+      "from": "router_b",
+      "to": "firefox",
+      "label": "no rule matched",
       "variant": "emphasis"
-    },
-    {
-      "id": "work-history",
-      "from": "chromework",
-      "to": "history",
-      "label": "logged",
-      "variant": "dashed",
-      "role": "return"
     }
   ],
   "cards": [
     {
       "dot": "cyan",
-      "title": "The simple part",
+      "title": "Without rules",
       "items": [
-        "The menubar icon is the browser your links open in",
-        "Click another one and every link follows, from then on"
+        "Every link opens in the browser ticked in the menubar",
+        "Tick a different one and every link follows"
       ]
     },
     {
       "dot": "rose",
-      "title": "The optional part",
+      "title": "With one rule",
       "items": [
-        "Rules match a URL pattern or the app the link came from",
-        "Anything unmatched falls through to the browser you ticked"
+        "Mail -> chrome work sends mail links to the work profile",
+        "Everything else keeps going to the ticked browser"
       ]
     }
   ]
