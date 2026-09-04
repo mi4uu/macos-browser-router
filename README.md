@@ -9,8 +9,12 @@ your Mac opens in.** Free, open source, no popup asking you every single time.
 
 ## Quick start
 
-One line. No clone, no Xcode — downloads the latest release, installs it into
-`~/Applications`, registers it as a browser and launches it:
+```sh
+brew install --cask mi4uu/tap/browser-router
+```
+
+or, without Homebrew — downloads the latest release into `~/Applications`, registers it as
+a browser and launches it:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/mi4uu/macos-browser-router/main/install.sh | bash
@@ -84,13 +88,19 @@ them as "browsers". Untick them in **Edit list** and they are gone.
 
 macOS 14 or newer. Releases are universal binaries, so Apple Silicon and Intel both work.
 
-**Option A — the install script** *(see [Quick start](#quick-start))*
+**Option A — Homebrew**
+
+```sh
+brew install --cask mi4uu/tap/browser-router
+```
+
+**Option B — the install script**
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/mi4uu/macos-browser-router/main/install.sh | bash
 ```
 
-**Option B — download the app**
+**Option C — download the app**
 
 Grab the `.zip` from [Releases](https://github.com/mi4uu/macos-browser-router/releases),
 unzip it into `~/Applications`, then clear the quarantine flag so macOS will open it:
@@ -99,7 +109,7 @@ unzip it into `~/Applications`, then clear the quarantine flag so macOS will ope
 xattr -dr com.apple.quarantine ~/Applications/"Browser Router.app"
 ```
 
-**Option C — build from source** *(needs Xcode Command Line Tools)*
+**Option D — build from source** *(needs Xcode Command Line Tools)*
 
 ```sh
 git clone https://github.com/mi4uu/macos-browser-router.git
@@ -112,9 +122,11 @@ open -a ~/Applications/"Browser Router.app"
 
 Releases are built by GitHub Actions and signed ad-hoc, not notarized by Apple —
 notarization needs a $99/year developer account and this project is free. macOS therefore
-quarantines the downloaded app, and options A and B clear that flag. Building from source
-(option C) never sets it in the first place. If you would rather not take my word for what
-the binary contains, option C builds the same universal app from the same script CI runs.
+quarantines the downloaded app, and options A, B and C clear that flag — the Homebrew cask
+does it in a `postflight` block you can read in
+[the tap](https://github.com/mi4uu/homebrew-tap/blob/main/Casks/browser-router.rb).
+Building from source (option D) never sets the flag in the first place, and produces the
+same universal app from the same script CI runs.
 
 ## Files
 
@@ -130,7 +142,8 @@ the binary contains, option C builds the same universal app from the same script
 
 `./build.sh` builds for your machine and installs it. `./release.sh 1.2.3` builds the
 universal, versioned bundle and zips it into `dist/` — the same script GitHub Actions runs
-for every push and every `v*` tag.
+for every push and every `v*` tag. Tagging `v1.2.3` publishes the release;
+`./scripts/bump-cask.sh 1.2.3` then points the Homebrew cask at it.
 
 ## How it works
 
