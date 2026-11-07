@@ -190,10 +190,18 @@ Browser Router is free and will stay free. If it removes the daily annoyance it 
 to remove, you are welcome to buy me a coffee:
 
 - [GitHub Sponsors](https://github.com/sponsors/mi4uu)
-- [paypal.me/mi4uuuu](https://paypal.me/mi4uuuu)
+- [PayPal](https://www.paypal.com/paypalme/mi4uuuu)
 
 Entirely optional. Bug reports and translations are just as valuable.
 
 ## License
 
-[AGPL-3.0](LICENSE)
+AGPL-3.0-or-later, see [LICENSE](LICENSE).
+
+Need it in a closed-source product, or can't meet the AGPL terms? Commercial licences are available on request: get in touch via [lipinski.work](https://lipinski.work).
+
+By sending a pull request you agree that your contribution may be offered under both the AGPL and a commercial licence.
+
+## Author
+
+Made by [Michał Lipiński](https://lipinski.work) ([GitHub](https://github.com/mi4uu)).
