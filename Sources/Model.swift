@@ -23,6 +23,8 @@ struct Config: Codable {
     var language = "auto"
     /// Target ids hidden from the menu — terminals and IDEs that register as http handlers.
     var hidden: [String] = []
+    /// Days of history kept besides today; 0 keeps only today. `nil` keeps everything.
+    var historyRetentionDays: Int?
     init() {}
 
     /// Decoded key by key: a config written by an older version is missing the newer
@@ -32,6 +34,7 @@ struct Config: Codable {
         defaultBrowser = try c.decodeIfPresent(String.self, forKey: .defaultBrowser)
         hidden = try c.decodeIfPresent([String].self, forKey: .hidden) ?? []
         language = try c.decodeIfPresent(String.self, forKey: .language) ?? "auto"
+        historyRetentionDays = try? c.decodeIfPresent(Int.self, forKey: .historyRetentionDays)
     }
 
     static func load() -> Config {
@@ -190,6 +193,28 @@ enum History {
         } else {
             try? line.write(to: Paths.history, options: .atomic)
         }
+    }
+
+    /// Drops entries from before the start of the day `retentionDays` ago, and any line that cannot be read.
+    static func prune(retentionDays: Int, file: URL = Paths.history,
+                      now: Date = Date(), calendar: Calendar = .current) {
+        guard let data = try? Data(contentsOf: file),
+              let cutoff = calendar.date(byAdding: .day, value: -max(retentionDays, 0),
+                                         to: calendar.startOfDay(for: now)) else { return }
+        let decoder = JSONDecoder()
+        let lines = data.split(separator: 0x0A)
+        let kept = lines.filter { line in
+            guard let entry = try? decoder.decode(HistoryEntry.self, from: Data(line)),
+                  let date = entry.date else { return false }
+            return date >= cutoff
+        }
+        guard kept.count != lines.count else { return }
+        var output = Data()
+        for line in kept {
+            output.append(contentsOf: line)
+            output.append(0x0A)
+        }
+        try? output.write(to: file, options: .atomic)
     }
 
     /// Last `limit` entries, newest first.
