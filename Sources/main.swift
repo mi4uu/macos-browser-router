@@ -10,6 +10,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var lastForeignApp: NSRunningApplication?
     var historyPruneTimer: Timer?
 
+    static let retentionOptions: [(title: String, days: Int?)] = [
+        ("Forever", nil),
+        ("Today only", 0),
+        ("Today and yesterday", 1),
+        ("Last 7 days", 6)
+    ]
+
     func schedulePruning() {
         historyPruneTimer?.invalidate()
         historyPruneTimer = nil
@@ -152,6 +159,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let reveal = NSMenuItem(title: L("Reveal history file…"), action: #selector(revealHistory), keyEquivalent: "")
         reveal.target = self
         historyMenu.addItem(reveal)
+
+        let keepItem = NSMenuItem(title: L("Keep history"), action: nil, keyEquivalent: "")
+        let keepMenu = NSMenu()
+        for option in AppDelegate.retentionOptions {
+            let item = NSMenuItem(title: L(option.title), action: #selector(selectRetention(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = option.days.map { NSNumber(value: $0) } ?? NSNull()
+            item.state = config.historyRetentionDays == option.days ? .on : .off
+            keepMenu.addItem(item)
+        }
+        keepItem.submenu = keepMenu
+        historyMenu.addItem(keepItem)
         historyItem.submenu = historyMenu
         menu.addItem(historyItem)
 
@@ -255,6 +274,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         config.save()
         refreshStatusIcon()
+    }
+
+    @objc func selectRetention(_ sender: NSMenuItem) {
+        config.historyRetentionDays = (sender.representedObject as? NSNumber)?.intValue
+        config.save()
+        schedulePruning()
     }
 
     @objc func reopen(_ sender: NSMenuItem) {
