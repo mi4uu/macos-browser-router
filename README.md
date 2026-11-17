@@ -141,6 +141,15 @@ grep github ~/Library/Application\ Support/BrowserRouter/history.jsonl | tail -5
 Terminals and IDEs register themselves as URL handlers, so macOS lists them among your
 "browsers". Untick them in **Edit list** and they are gone from the menu.
 
+## Optional: forgetting history
+
+By default history is kept forever. To keep only recent links, add `historyRetentionDays` to
+`config.json`: `0` keeps only today and clears everything at midnight, `1` also keeps yesterday.
+
+```json
+{ "historyRetentionDays": 0 }
+```
+
 ## Optional: language
 
 The menu follows your macOS language, and switches between English and Polski by hand in
@@ -154,7 +163,7 @@ The menu follows your macOS language, and switches between English and Polski by
 
 | File | What is in it |
 | --- | --- |
-| `config.json` | current browser, hidden entries, menu language |
+| `config.json` | current browser, hidden entries, menu language, history retention |
 | `rules.txt` | routing rules, re-read on every link |
 | `history.jsonl` | one JSON object per opened link |
 

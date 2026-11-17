@@ -8,9 +8,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     /// Frontmost app that is not us — the app a URL request most likely came from.
     var lastForeignApp: NSRunningApplication?
+    var historyPruneTimer: Timer?
+
+    func schedulePruning() {
+        historyPruneTimer?.invalidate()
+        historyPruneTimer = nil
+        guard let days = config.historyRetentionDays else { return }
+        History.prune(retentionDays: days)
+        guard let nextMidnight = Calendar.current.nextDate(
+            after: Date(), matching: DateComponents(hour: 0, minute: 0), matchingPolicy: .nextTime) else { return }
+        let timer = Timer(fire: nextMidnight, interval: 0, repeats: false) { [weak self] _ in
+            self?.schedulePruning()
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        historyPruneTimer = timer
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         L10n.language = config.language
+        schedulePruning()
         Rules.createTemplateIfMissing()
         targets = Target.all()
         if config.defaultBrowser == nil { config.defaultBrowser = visibleTargets().first?.id; config.save() }
@@ -86,6 +102,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         config = Config.load()
         L10n.language = config.language
+        schedulePruning()
         targets = Target.all()
         menu.removeAllItems()
 
