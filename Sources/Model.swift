@@ -34,7 +34,7 @@ struct Config: Codable {
         defaultBrowser = try c.decodeIfPresent(String.self, forKey: .defaultBrowser)
         hidden = try c.decodeIfPresent([String].self, forKey: .hidden) ?? []
         language = try c.decodeIfPresent(String.self, forKey: .language) ?? "auto"
-        historyRetentionDays = try c.decodeIfPresent(Int.self, forKey: .historyRetentionDays)
+        historyRetentionDays = try? c.decodeIfPresent(Int.self, forKey: .historyRetentionDays)
     }
 
     static func load() -> Config {
@@ -198,19 +198,23 @@ enum History {
     /// Drops entries from before the start of the day `retentionDays` ago, and any line that cannot be read.
     static func prune(retentionDays: Int, file: URL = Paths.history,
                       now: Date = Date(), calendar: Calendar = .current) {
-        guard let text = try? String(contentsOf: file, encoding: .utf8),
+        guard let data = try? Data(contentsOf: file),
               let cutoff = calendar.date(byAdding: .day, value: -max(retentionDays, 0),
                                          to: calendar.startOfDay(for: now)) else { return }
         let decoder = JSONDecoder()
-        let lines = text.split(separator: "\n")
+        let lines = data.split(separator: 0x0A)
         let kept = lines.filter { line in
-            guard let entry = try? decoder.decode(HistoryEntry.self, from: Data(line.utf8)),
+            guard let entry = try? decoder.decode(HistoryEntry.self, from: Data(line)),
                   let date = entry.date else { return false }
             return date >= cutoff
         }
         guard kept.count != lines.count else { return }
-        let output = kept.isEmpty ? "" : kept.joined(separator: "\n") + "\n"
-        try? output.write(to: file, atomically: true, encoding: .utf8)
+        var output = Data()
+        for line in kept {
+            output.append(contentsOf: line)
+            output.append(0x0A)
+        }
+        try? output.write(to: file, options: .atomic)
     }
 
     /// Last `limit` entries, newest first.

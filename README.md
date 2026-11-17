@@ -146,6 +146,7 @@ Terminals and IDEs register themselves as URL handlers, so macOS lists them amon
 By default history is kept forever. To keep only recent links, pick an option under
 **History → Keep history**, or set `historyRetentionDays` in `config.json` yourself: `0` keeps
 only today and clears everything at midnight, `1` also keeps yesterday.
+Pruning happens while the app is running and again each time it starts.
 
 ```json
 { "historyRetentionDays": 0 }

@@ -25,6 +25,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard let nextMidnight = Calendar.current.nextDate(
             after: Date(), matching: DateComponents(hour: 0, minute: 0), matchingPolicy: .nextTime) else { return }
         let timer = Timer(fire: nextMidnight, interval: 0, repeats: false) { [weak self] _ in
+            self?.config = Config.load()
             self?.schedulePruning()
         }
         RunLoop.main.add(timer, forMode: .common)
